@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "App",
   data() {
@@ -39,15 +40,6 @@ export default {
     };
   },
   methods: {
-    renameTodo(e) {
-      const id = e.target.id;
-
-      const todo = this.todos.find((todo) => todo.id == id);
-
-      todo.title = e.target.value;
-
-      localStorage.setItem("todos", JSON.stringify(this.todos));
-    },
     changeTodoStatus(e) {
       const id = e.target.id;
 
@@ -55,8 +47,22 @@ export default {
 
       todo.completed = e.target.checked;
 
-      localStorage.setItem("todos", JSON.stringify(this.todos));
+      axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
+        completed: todo.completed,
+      });
     },
+    renameTodo(e) {
+      const id = e.target.id;
+
+      const todo = this.todos.find((todo) => todo.id == id);
+
+      todo.title = e.target.value;
+
+      axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
+        title: todo.title,
+      });
+    },
+
     addTodo(e) {
       const id = e.target.id;
 
@@ -64,14 +70,17 @@ export default {
 
       todo.deleted = false;
 
-      localStorage.setItem("todos", JSON.stringify(this.todos));
+      axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
+        deleted: todo.deleted,
+      });
     },
   },
   mounted() {
-    const todos = JSON.parse(localStorage.getItem("todos"));
-    if (todos) {
-      this.todos = todos;
-    }
+    axios
+      .get("https://641efc96ad55ae01ccb403b9.mockapi.io/todos")
+      .then((response) => {
+        this.todos = response.data;
+      });
   },
 };
 </script>

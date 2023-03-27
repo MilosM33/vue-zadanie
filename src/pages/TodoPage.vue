@@ -7,30 +7,34 @@
 
     <div class="todo-list">
       <div v-for="todo in todos" :key="todo.id">
-        <div class="todo-item" v-if="!todo.deleted">
-          <input type="checkbox" :id="todo.id" :checked="todo.completed" @change="changeTodoStatus" />
-          <input
-            type="text"
-            class="todo-title"
-            name=""
-            :id="todo.id"
-            :value="todo.title"
-            @change="renameTodo"
-          />
+        <TodoItem
+          :deleted="todo.deleted"
+          :text="todo.title"
+          :id="todo.id"
+          :completed="todo.completed"
+          @changeTodoStatus="changeTodoStatus"
+          @renameTodo="renameTodo"
+          @deleteTodo="deleteTodo"
 
-          <button class="btn-remove" @click="deleteTodo" :id="todo.id">
-            Delete
-          </button>
-        </div>
+          v-if="!todo.deleted"
+        />
       </div>
     </div>
 
     <button class="btn" id="addTodo" @click="addTodo">Add new todo</button>
+
+    <div class="button-section">
+      <button class="btn btn-get" @click="getTodos">Get data</button>
+    </div>
   </section>
 </template>
 
 <script>
+import TodoItem from "../components/TodoItem.vue";
+import axios from "axios";
+
 export default {
+  components: { TodoItem },
   name: "App",
   data() {
     return {
@@ -38,11 +42,7 @@ export default {
     };
   },
   mounted() {
-    const todos = JSON.parse(localStorage.getItem("todos"));
-
-    if (todos) {
-      this.todos = todos;
-    }
+    this.getTodos();
   },
   methods: {
     addTodo() {
@@ -54,7 +54,7 @@ export default {
       };
       this.todos.push(todo);
 
-      localStorage.setItem("todos", JSON.stringify(this.todos));
+      axios.post("https://641efc96ad55ae01ccb403b9.mockapi.io/todos", todo);
     },
     changeTodoStatus(e) {
       const id = e.target.id;
@@ -63,7 +63,9 @@ export default {
 
       todo.completed = e.target.checked;
 
-      localStorage.setItem("todos", JSON.stringify(this.todos));
+      axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
+        completed: todo.completed,
+      });
     },
     renameTodo(e) {
       const id = e.target.id;
@@ -72,7 +74,9 @@ export default {
 
       todo.title = e.target.value;
 
-      localStorage.setItem("todos", JSON.stringify(this.todos));
+      axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
+        title: todo.title,
+      });
     },
 
     deleteTodo(e) {
@@ -82,7 +86,19 @@ export default {
 
       todo.deleted = true;
 
-      localStorage.setItem("todos", JSON.stringify(this.todos));
+      axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
+        deleted: todo.deleted,
+      });
+    },
+
+    getTodos() {
+      axios
+        .get("https://641efc96ad55ae01ccb403b9.mockapi.io/todos")
+        .then((res) => {
+          this.todos = res.data;
+
+          localStorage.setItem("todos", JSON.stringify(this.todos));
+        });
     },
   },
 };
