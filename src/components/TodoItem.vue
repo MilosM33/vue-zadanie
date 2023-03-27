@@ -6,14 +6,9 @@
       :checked="completed"
       @change="changeTodoStatus"
     />
-    <input
-      type="text"
-      class="todo-title"
-      name=""
-      :id="id"
-      :value="text"
-      @change="renameTodo"
-    />
+    <router-link :to="{ path: '/edit-todo/' + id }"
+      ><div class="todo-title">{{ text }}</div></router-link
+    >
 
     <button class="btn-remove" :id="id" @click="deleteTodo">Delete</button>
   </div>

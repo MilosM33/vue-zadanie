@@ -14,14 +14,7 @@
             :checked="todo.completed"
             @change="changeTodoStatus"
           />
-          <input
-            type="text"
-            class="todo-title"
-            name=""
-            :value="todo.title"
-            :id="todo.id"
-            @change="renameTodo"
-          />
+          <div class="todo-title">{{ todo.title }}</div>
 
           <button class="btn-add" @click="addTodo" :id="todo.id">Add</button>
         </div>
@@ -34,10 +27,10 @@
 import axios from "axios";
 export default {
   name: "App",
-  data() {
-    return {
-      todos: [],
-    };
+  computed: {
+    todos() {
+      return this.$store.state.todos;
+    },
   },
   methods: {
     changeTodoStatus(e) {
@@ -79,7 +72,7 @@ export default {
     axios
       .get("https://641efc96ad55ae01ccb403b9.mockapi.io/todos")
       .then((response) => {
-        this.todos = response.data;
+        this.$store.commit("setTodos", response.data);
       });
   },
 };

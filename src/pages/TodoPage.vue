@@ -1,6 +1,9 @@
 <template>
   <section class="todo-container">
     <h1 class="title">TODO LIST</h1>
+    <h3>
+      Todo count: {{ TodoCount }}
+    </h3>
     <div>
       <router-link to="/removed-todos">Removed todos</router-link>
     </div>
@@ -15,15 +18,12 @@
           @changeTodoStatus="changeTodoStatus"
           @renameTodo="renameTodo"
           @deleteTodo="deleteTodo"
-
-          v-if="!todo.deleted"
         />
       </div>
     </div>
 
-    <button class="btn" id="addTodo" @click="addTodo">Add new todo</button>
-
-    <div class="button-section">
+    <div>
+      <TodoInput @addTodo="addTodo"></TodoInput>
       <button class="btn btn-get" @click="getTodos">Get data</button>
     </div>
   </section>
@@ -31,28 +31,29 @@
 
 <script>
 import TodoItem from "../components/TodoItem.vue";
+import TodoInput from "../components/TodoInput.vue";
 import axios from "axios";
 
 export default {
-  components: { TodoItem },
+  components: { TodoItem, TodoInput },
   name: "App",
-  data() {
-    return {
-      todos: [],
-    };
+
+  computed: {
+    todos() {
+      return this.$store.state.todos.filter((todo) => !todo.deleted);
+    },
+
+    TodoCount() {
+      return this.$store.state.todos.filter((todo) => !todo.deleted).length;
+    },
   },
   mounted() {
     this.getTodos();
   },
+
   methods: {
-    addTodo() {
-      const todo = {
-        id: Date.now(),
-        title: "New todo",
-        completed: false,
-        deleted: false,
-      };
-      this.todos.push(todo);
+    addTodo(todo) {
+      this.$store.commit("addTodo", todo);
 
       axios.post("https://641efc96ad55ae01ccb403b9.mockapi.io/todos", todo);
     },
@@ -60,22 +61,23 @@ export default {
       const id = e.target.id;
 
       const todo = this.todos.find((todo) => todo.id == id);
-
-      todo.completed = e.target.checked;
+      const completed = e.target.checked;
+      this.$store.commit("changeTodoStatus", {
+        id,
+        completed,
+      });
 
       axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
-        completed: todo.completed,
+        completed,
       });
     },
     renameTodo(e) {
       const id = e.target.id;
-
-      const todo = this.todos.find((todo) => todo.id == id);
-
-      todo.title = e.target.value;
+      const title = e.target.value;
+      this.$store.commit("renameTodo", { id, title });
 
       axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
-        title: todo.title,
+        title,
       });
     },
 
@@ -83,11 +85,12 @@ export default {
       const id = e.target.id;
 
       const todo = this.todos.find((todo) => todo.id == id);
+      const state = !todo.deleted;
 
-      todo.deleted = true;
+      this.$store.commit("deleteTodo", { id, state });
 
       axios.put(`https://641efc96ad55ae01ccb403b9.mockapi.io/todos/${id}`, {
-        deleted: todo.deleted,
+        deleted: state,
       });
     },
 
@@ -95,9 +98,7 @@ export default {
       axios
         .get("https://641efc96ad55ae01ccb403b9.mockapi.io/todos")
         .then((res) => {
-          this.todos = res.data;
-
-          localStorage.setItem("todos", JSON.stringify(this.todos));
+          this.$store.commit("setTodos", res.data);
         });
     },
   },
