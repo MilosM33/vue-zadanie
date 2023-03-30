@@ -101,3 +101,13 @@ export default {
   },
 };
 </script>
+<style scoped>
+.btn-remove {
+  padding: 10px;
+  outline: none;
+  border: 0;
+  color: #fff;
+  border-radius: 5px;
+  background: #e74c3c;
+}
+</style>

@@ -9,8 +9,12 @@
     <router-link :to="{ path: '/edit-todo/' + id }"
       ><div class="todo-title">{{ text }}</div></router-link
     >
-
-    <button class="btn-remove" :id="id" @click="deleteTodo">Delete</button>
+    <button class="btn-add" :id="id" @click="unDeleteTodo" v-if="deleted">
+      Add
+    </button>
+    <button class="btn-remove" :id="id" @click="deleteTodo" v-if="!deleted">
+      Delete
+    </button>
   </div>
 </template>
 
@@ -28,6 +32,38 @@ export default {
     deleteTodo(e) {
       this.$emit("deleteTodo", e);
     },
+
+    unDeleteTodo(e) {
+      this.$emit("unDeleteTodo", e);
+    },
   },
 };
 </script>
+
+<style scoped>
+.todo-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.todo-item > * {
+  margin-right: 10px;
+}
+
+.btn-remove {
+  padding: 10px;
+  outline: none;
+  border: 0;
+  color: #fff;
+  border-radius: 5px;
+  background: #e74c3c;
+}
+.btn-add {
+  padding: 10px;
+  outline: none;
+  border: 0;
+  color: #fff;
+  border-radius: 5px;
+  background: #2ecc71;
+}
+</style>

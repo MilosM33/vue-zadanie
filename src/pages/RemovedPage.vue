@@ -7,26 +7,28 @@
 
     <div class="todo-list">
       <div v-for="todo in todos" :key="todo.id">
-        <div class="todo-item" v-if="todo.deleted">
-          <input
-            type="checkbox"
-            :id="todo.id"
-            :checked="todo.completed"
-            @change="changeTodoStatus"
-          />
-          <div class="todo-title">{{ todo.title }}</div>
-
-          <button class="btn-add" @click="addTodo" :id="todo.id">Add</button>
-        </div>
+        <TodoItem
+          :deleted="todo.deleted"
+          :text="todo.title"
+          :id="todo.id"
+          :completed="todo.completed"
+          @changeTodoStatus="changeTodoStatus"
+          @renameTodo="renameTodo"
+          @unDeleteTodo="addTodo"
+          v-if="todo.deleted"
+        />
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import TodoItem from "../components/TodoItem.vue";
 import axios from "axios";
+
 export default {
   name: "App",
+  components: { TodoItem },
   computed: {
     todos() {
       return this.$store.getters.Todos;
