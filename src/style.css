@@ -74,15 +74,12 @@ body {
 .btn-get {
   background-color: #3498db;
 }
-.btn-post {
-  background-color: #9b59b6;
-}
 .todo-item {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
 }
-.todo-item > *{
+.todo-item > * {
   margin-right: 10px;
 }
 

@@ -29,7 +29,7 @@ export default {
   name: "App",
   computed: {
     todos() {
-      return this.$store.state.todos;
+      return this.$store.getters.Todos;
     },
   },
   methods: {

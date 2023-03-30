@@ -1,9 +1,7 @@
 <template>
   <section class="todo-container">
     <h1 class="title">TODO LIST</h1>
-    <h3>
-      Todo count: {{ TodoCount }}
-    </h3>
+    <h3>Todo count: {{ TodoCount }}</h3>
     <div>
       <router-link to="/removed-todos">Removed todos</router-link>
     </div>
@@ -40,11 +38,11 @@ export default {
 
   computed: {
     todos() {
-      return this.$store.state.todos.filter((todo) => !todo.deleted);
+      return this.$store.getters.FiltredTodos;
     },
 
     TodoCount() {
-      return this.$store.state.todos.filter((todo) => !todo.deleted).length;
+      return this.$store.getters.TodoCount;
     },
   },
   mounted() {

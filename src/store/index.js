@@ -50,6 +50,19 @@ const store = createStore({
       commit("setTodos", todos);
     },
   },
+  getters: {
+    FiltredTodos: (state) => {
+      return state.todos.filter((todo) => !todo.deleted);
+    },
+
+    TodoCount: (state) => {
+      return state.todos.length;
+    },
+
+    Todos(state) {
+      return state.todos;
+    }
+  },
 });
 
 export default store;
